@@ -171,6 +171,8 @@ function fillForm(x){
  document.getElementById('name').value=x.name||'';
  document.getElementById('mobile').value=x.mobile||'';
  document.getElementById('nid').value=x.nid||'';
+ document.getElementById('circle').value=x.circle||'Dhaka';
+ document.getElementById('fastIssue').value=x.fastIssue||'';
  document.getElementById('service').value=x.service||'Learner License';
  document.getElementById('licenseRef').value=x.licenseRef||'';
  document.getElementById('licenseNumber').value=x.licenseNumber||'';
@@ -358,8 +360,9 @@ function restoreFromFile(event){
 }
 
 const DEFAULT_LOGIN_PASSWORD='1234';
-function loginPassword(){return safeGet('brta247_login_password_v2',DEFAULT_LOGIN_PASSWORD)||DEFAULT_LOGIN_PASSWORD}
+function loginPassword(){return safeGet('brta247_login_password_v3',DEFAULT_LOGIN_PASSWORD)||DEFAULT_LOGIN_PASSWORD}
 function doLogin(){
+ document.getElementById('loginErr').style.display='none';
  const p=document.getElementById('loginPass').value;
  if(p===loginPassword()){
    sessionStorage.setItem('brta247_logged_in','1');
@@ -383,7 +386,7 @@ function changeLoginPassword(){
  if(old!==loginPassword()){alert('Current password is incorrect.');return}
  if(n.length<4){alert('Password must be at least 4 characters.');return}
  if(n!==c){alert('New passwords do not match.');return}
- safeSet('brta247_login_password_v2',n);
+ safeSet('brta247_login_password_v3',n);
  alert('Password changed successfully.');
  document.getElementById('oldPass').value='';document.getElementById('newPass').value='';document.getElementById('confirmPass').value='';
 }
