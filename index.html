@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BRTA SUPPORT 24/7 — Customer Management</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f3f6f9;color:#17212b}
+.app{display:flex;min-height:100vh}.side{width:245px;background:#102a43;color:#fff;padding:22px 14px}.brand{font-size:21px;font-weight:800;padding:8px 10px 24px}.brand small{display:block;font-size:11px;color:#b9d5e8;margin-top:5px}.nav button{display:block;width:100%;border:0;background:transparent;color:#dceaf4;text-align:left;padding:12px 13px;border-radius:9px;margin:4px 0;cursor:pointer;font-size:14px}.nav button.active,.nav button:hover{background:#1f5f8b;color:white}.main{flex:1;padding:22px;max-width:1400px;margin:auto}.top{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:20px}.top h1{margin:0;font-size:25px}.sub{color:#6b7785;font-size:13px;margin-top:5px}.btn{background:#0b6e4f;color:#fff;border:0;border-radius:8px;padding:10px 15px;font-weight:700;cursor:pointer}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}.card{background:#fff;padding:18px;border-radius:12px;box-shadow:0 2px 10px #17324d12}.card .n{font-size:27px;font-weight:800;margin-top:8px}.label{font-size:13px;color:#718096}.panel{background:#fff;border-radius:12px;margin-top:18px;padding:18px;box-shadow:0 2px 10px #17324d12}.panel h2{margin:0 0 15px;font-size:18px}.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}.search{flex:1;min-width:220px;padding:11px;border:1px solid #d8e0e8;border-radius:8px}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:760px}th,td{padding:12px;border-bottom:1px solid #edf0f3;text-align:left;font-size:13px}th{background:#f7f9fb;color:#566575}.pill{padding:5px 9px;border-radius:20px;font-size:11px;font-weight:700;background:#e8f5ef;color:#0b6e4f}.due{background:#fff0e5;color:#b45309}.modal{display:none;position:fixed;inset:0;background:#0007;align-items:center;justify-content:center;padding:20px}.modal.show{display:flex}.box{background:white;border-radius:14px;width:min(720px,100%);padding:20px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.grid label{font-size:12px;color:#607080}.grid input,.grid select,.grid textarea{width:100%;margin-top:5px;padding:10px;border:1px solid #d8e0e8;border-radius:7px}.grid .full{grid-column:1/-1}.actions{display:flex;justify-content:flex-end;gap:10px;margin-top:16px}.mini{border:0;background:#e8f1f7;border-radius:6px;padding:6px 8px;cursor:pointer}.mini:hover{filter:brightness(.95)}.danger{background:#ffe8e8}.secondary{background:#e9eef2;color:#263746}.empty{padding:30px;text-align:center;color:#718096}.rem{padding:11px;border-radius:8px;background:#fff7e6;margin:7px 0;border-left:4px solid #f59e0b}.rem.red{background:#ffecec;border-left-color:#dc2626}.rem.green{background:#eaf8f0;border-left-color:#16a34a}.rem b{display:block;margin-bottom:3px}.hidden{display:none}
+@media(max-width:850px){.side{width:70px;padding:14px 8px}.brand{font-size:0}.brand:after{content:"B24";font-size:20px;font-weight:800}.brand small,.nav button span{display:none}.nav button{text-align:center}.cards{grid-template-columns:repeat(2,1fr)}.main{padding:14px}.top h1{font-size:20px}.grid{grid-template-columns:1fr}}
+@media(max-width:500px){.cards{grid-template-columns:1fr 1fr}.card{padding:13px}.card .n{font-size:22px}}
+.loginScreen{position:fixed;inset:0;background:#f3f6f9;display:flex;align-items:center;justify-content:center;z-index:9999}.loginBox{width:min(390px,92%);background:#fff;padding:30px;border-radius:15px;box-shadow:0 8px 30px #102a4320;text-align:center}.loginBox h2{margin:0;color:#102a43}.loginBox p{color:#718096;font-size:13px}.loginBox input{width:100%;padding:12px;border:1px solid #d8e0e8;border-radius:8px;margin:10px 0}.loginBox .btn{width:100%}.loginErr{display:none;color:#b91c1c;font-size:12px;margin-top:10px}.appLocked{display:none}.pwPanel{max-width:560px}
+</style>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#102a43">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="BRTA Manager">
+<link rel="apple-touch-icon" href="icon-192.png">
+</head>
+<body>
+<div id="loginScreen" class="loginScreen">
+  <div class="loginBox">
+    <h2>BRTA SUPPORT 24/7</h2>
+    <p>Secure Login</p>
+    <input id="loginPass" type="password" placeholder="Password" onkeydown="if(event.key==='Enter') doLogin()">
+    <button class="btn" onclick="doLogin()">🔐 Login</button>
+    <div style="margin-top:12px;font-size:12px;color:#718096">Offline mode • Default password: <b>1234</b> • Login password is reset for this version</div>
+    <div id="loginErr" class="loginErr">Incorrect password</div>
+  </div>
+</div>
+<div class="app">
+<aside class="side">
+  <div class="brand">BRTA SUPPORT 24/7<small>Customer Management System</small></div>
+  <div class="nav">
+    <button class="active" onclick="showPage('dashboard',this)">🏠 <span>Dashboard</span></button>
+    <button onclick="showPage('customers',this)">👤 <span>Customers</span></button>
+    <button onclick="showPage('applications',this)">📋 <span>Applications</span></button>
+    <button onclick="showPage('payments',this)">💰 <span>Payments</span></button>
+    <button onclick="showPage('reports',this)">📊 <span>Reports</span></button>
+    <button onclick="showPage('settings',this)">⚙️ <span>Settings</span></button>
+    <button onclick="doLogout()">🚪 <span>Logout</span></button>
+  </div>
+</aside>
+<main class="main">
+  <section id="dashboard">
+    <div class="top"><div><h1>BRTA SUPPORT 24/7</h1><div class="sub">Customer Management Dashboard</div></div><button class="btn" onclick="openModal()">+ Add Customer</button></div>
+    <div class="cards">
+      <div class="card"><div class="label">Total Customers</div><div class="n" id="totalCustomers">0</div></div>
+      <div class="card"><div class="label">Pending Applications</div><div class="n" id="pending">0</div></div>
+      <div class="card"><div class="label">Completed</div><div class="n" id="completed">0</div></div>
+      <div class="card"><div class="label">Total Due</div><div class="n" id="totalDue">৳0</div></div>
+    </div>
+    <div class="panel"><h2>💾 Offline Storage</h2><div class="sub">Customer records are saved in this browser on this computer. Keep this HTML file in a safe place and make backups.</div></div>
+    <div class="panel"><h2>🔔 Reminders</h2><div class="sub" style="margin-bottom:12px">License expiry reminder: 59 days before expiry • Learner exam reminder: 3 days before exam</div><div id="reminders"></div></div>
+    <div class="panel"><h2>Recent Customers</h2><div id="recent"></div></div>
+  </section>
+
+  <section id="customers" class="hidden">
+    <div class="top"><div><h1>Customers</h1><div class="sub">Manage customer information</div></div><button class="btn" onclick="openModal()">+ Add Customer</button></div>
+    <div class="panel"><div class="toolbar"><input id="search" class="search" placeholder="Search name, mobile, NID or Customer ID..." oninput="renderCustomers()"></div><div class="tablewrap"><table><thead><tr><th>ID</th><th>Name</th><th>Mobile</th><th>Circle</th><th>Service</th><th>Fast Issue Date</th><th>Status</th><th>Due</th><th>Actions</th></tr></thead><tbody id="customerRows"></tbody></table></div></div>
+  </section>
+
+  <section id="applications" class="hidden"><div class="top"><div><h1>Applications</h1><div class="sub">Track BRTA service progress</div></div></div><div class="panel"><div class="tablewrap"><table><thead><tr><th>Customer</th><th>Service</th><th>Status</th><th>Application Date</th></tr></thead><tbody id="applicationRows"></tbody></table></div></div></section>
+  <section id="payments" class="hidden"><div class="top"><div><h1>Payments</h1><div class="sub">Payment and due tracking</div></div></div><div class="panel"><div class="tablewrap"><table><thead><tr><th>Customer</th><th>Total</th><th>Paid</th><th>Due</th></tr></thead><tbody id="paymentRows"></tbody></table></div></div></section>
+  <section id="reports" class="hidden"><div class="top"><div><h1>Reports</h1><div class="sub">Quick business overview</div></div></div><div class="panel"><h2>⚙️ Reminder Settings</h2><div class="grid"><label>License Expiry Reminder (days before)<input id="expiryReminderDays" type="number" min="0" value="59"></label><label>Learner Exam Reminder (days before)<input id="examReminderDays" type="number" min="0" value="3"></label></div><div class="actions"><button class="btn" onclick="saveReminderSettings()">Save Reminder Settings</button></div></div><div class="cards"><div class="card"><div class="label">Total Billing</div><div class="n" id="billing">৳0</div></div><div class="card"><div class="label">Total Paid</div><div class="n" id="paid">৳0</div></div><div class="card"><div class="label">Total Due</div><div class="n" id="due2">৳0</div></div><div class="card"><div class="label">Applications</div><div class="n" id="apps">0</div></div></div></section>
+<section id="settings" class="hidden"><div class="top"><div><h1>Settings</h1><div class="sub">Password and backup management</div></div></div>
+<div class="panel"><h2>☁️ Google Drive Backup</h2>
+<div class="sub">Export your customer records to a backup file, then save that file to your Google Drive. To restore, select a backup file from this computer.</div>
+<div class="actions" style="justify-content:flex-start;flex-wrap:wrap">
+<button class="btn" onclick="backupToFile()">⬇️ Create Backup File</button>
+<button class="btn secondary" onclick="document.getElementById('restoreFile').click()">🔄 Restore Backup</button>
+<input id="restoreFile" type="file" accept=".json,application/json" style="display:none" onchange="restoreFromFile(event)">
+</div>
+<div style="margin-top:12px;font-size:12px;color:#718096">Recommended: after creating the backup, upload the file to your Google Drive manually. This avoids storing your Google password inside this offline application.</div>
+</div>
+<div class="panel"><h2>🛡️ Security / Recovery Email</h2>
+<div class="sub">Save your Gmail address as the admin security/recovery contact. This offline version stores it on this device; automatic email sending/reset requires an online mail service.</div>
+<div class="grid"><label>Admin Gmail / Recovery Email<input id="securityEmail" type="email" placeholder="yourname@gmail.com"></label></div>
+<div class="actions"><button class="btn" onclick="saveSecurityEmail()">Save Security Email</button></div>
+</div>
+<div class="panel pwPanel"><h2>🔐 Change Password</h2><div class="grid"><label>Current Password<input id="oldPass" type="password"></label><label>New Password<input id="newPass" type="password"></label><label>Confirm New Password<input id="confirmPass" type="password"></label></div><div class="actions"><button class="btn" onclick="changeLoginPassword()">Save New Password</button></div></div></section></main>
+</div>
+
+<div id="modal" class="modal"><div class="box">
+<h2 id="modalTitle">Add Customer</h2>
+<div class="grid">
+<label>Customer Name<input id="name" required></label>
+<label>Mobile Number<input id="mobile"></label>
+<label>NID Number<input id="nid"></label>
+<label>Circle Name<select id="circle"><option>Dhaka</option><option>Faridpur</option><option>Gazipur</option><option>Gopalganj</option><option>Kishoreganj</option><option>Madaripur</option><option>Manikganj</option><option>Munshiganj</option><option>Narayanganj</option><option>Narsingdi</option><option>Rajbari</option><option>Shariatpur</option><option>Tangail</option><option>Bogra</option><option>Joypurhat</option><option>Naogaon</option><option>Natore</option><option>Chapainawabganj</option><option>Pabna</option><option>Rajshahi</option><option>Sirajganj</option><option>Dinajpur</option><option>Gaibandha</option><option>Kurigram</option><option>Lalmonirhat</option><option>Nilphamari</option><option>Panchagarh</option><option>Rangpur</option><option>Thakurgaon</option><option>Barguna</option><option>Barishal</option><option>Bhola</option><option>Jhalokati</option><option>Patuakhali</option><option>Pirojpur</option><option>Bandarban</option><option>Brahmanbaria</option><option>Chandpur</option><option>Chattogram</option><option>Cox's Bazar</option><option>Cumilla</option><option>Feni</option><option>Khagrachhari</option><option>Lakshmipur</option><option>Noakhali</option><option>Rangamati</option><option>Habiganj</option><option>Moulvibazar</option><option>Sunamganj</option><option>Sylhet</option><option>Bagerhat</option><option>Chuadanga</option><option>Jashore</option><option>Jhenaidah</option><option>Khulna</option><option>Kushtia</option><option>Magura</option><option>Meherpur</option><option>Narail</option><option>Satkhira</option><option>Mymensingh</option><option>Netrokona</option><option>Jamalpur</option><option>Sherpur</option><option>Other / Custom</option></select></label>
+<label>Fast Issue Date<input id="fastIssue" type="date"></label>
+<label>Service<select id="service" onchange="toggleLicenseFields()"><option>Learner License</option><option>Driving License</option><option>License Renewal</option><option>Category Upgrade</option><option>Correction</option><option>Duplicate License</option><option>Smart Card</option><option>Driving Test</option><option>Vehicle Registration</option><option>Ownership Transfer</option><option>Other</option></select></label>
+<div id="licenseFields" class="full grid hidden">
+<label>Driving License Reference Number<input id="licenseRef"></label>
+<label>Driving License Number<input id="licenseNumber"></label>
+</div>
+<label>Learner Issue Date<input id="learnerIssueDate" type="date"></label>
+<label>License Issue Date<input id="licenseIssueDate" type="date"></label>
+<label>License Expiry Date<input id="expiryDate" type="date"></label>
+<label>Learner Exam Date<input id="examDate" type="date"></label>
+<label>Status<select id="status"><option>New</option><option>Processing</option><option>Submitted</option><option>Appointment/Test</option><option>Approved</option><option>Ready</option><option>Delivered</option><option>Cancelled</option></select></label>
+<label>Total Fee<input id="total" type="number" value="0"></label>
+<label>Advance Paid<input id="advance" type="number" value="0"></label>
+<label class="full">Notes<textarea id="notes" rows="2"></textarea></label>
+</div>
+<div class="actions"><button class="btn secondary" onclick="closeModal()">Cancel</button><button class="btn" id="saveBtn" onclick="saveCustomer()">Save Customer</button></div>
+</div></div>
+
+<script>
+let memoryCustomers=[];
+function safeGet(key, fallback=''){
+  try { return localStorage.getItem(key) ?? fallback; } catch(e) { return fallback; }
+}
+function safeSet(key, value){
+  try { localStorage.setItem(key, value); return true; } catch(e) { return false; }
+}
+let customers=[];
+try { customers=JSON.parse(safeGet('brta247_customers_v2','[]')||'[]'); } catch(e) { customers=[]; }
+customers=customers.map(x=>{ if(x.issueDate){ if(x.service==='Learner License' && !x.learnerIssueDate) x.learnerIssueDate=x.issueDate; else if(x.service!=='Learner License' && !x.licenseIssueDate) x.licenseIssueDate=x.issueDate; } return x; });
+function money(n){return '৳'+Number(n||0).toLocaleString('en-BD')}
+
+function autoBackup(){
+  try{
+    const payload={app:"BRTA SUPPORT 24/7",version:"2.0",createdAt:new Date().toISOString(),customers};
+    localStorage.setItem("brta_auto_backup_latest",JSON.stringify(payload));
+    const stamp=new Date().toISOString().replace(/[:.]/g,"-");
+    localStorage.setItem("brta_auto_backup_"+stamp,JSON.stringify(payload));
+    const keys=Object.keys(localStorage).filter(k=>k.startsWith("brta_auto_backup_")).sort();
+    while(keys.length>10){localStorage.removeItem(keys.shift())}
+  }catch(e){}
+}
+
+function save(){
+  autoBackup();
+  memoryCustomers=customers.slice();
+  safeSet('brta247_customers_v2',JSON.stringify(customers));
+  renderAll();
+}
+function renderAll(){
+ document.getElementById('totalCustomers').textContent=customers.length;
+ document.getElementById('pending').textContent=customers.filter(x=>!['Delivered','Cancelled'].includes(x.status)).length;
+ document.getElementById('completed').textContent=customers.filter(x=>x.status==='Delivered').length;
+ document.getElementById('totalDue').textContent=money(customers.reduce((a,x)=>a+(+x.total||0)-(+x.advance||0),0));
+ document.getElementById('billing').textContent=money(customers.reduce((a,x)=>a+(+x.total||0),0));
+ document.getElementById('paid').textContent=money(customers.reduce((a,x)=>a+(+x.advance||0),0));
+ document.getElementById('due2').textContent=money(customers.reduce((a,x)=>a+(+x.total||0)-(+x.advance||0),0));
+ document.getElementById('apps').textContent=customers.length;
+ renderCustomers(); renderApps(); renderPayments(); renderRecent(); renderReminders();
+}
+function renderCustomers(){
+ let q=(document.getElementById('search')?.value||'').toLowerCase();
+ let a=customers.filter(x=>(x.id+x.name+x.mobile+x.nid+(x.circle||'')+(x.fastIssue||'')).toLowerCase().includes(q));
+ document.getElementById('customerRows').innerHTML=a.length?a.map(x=>`<tr><td>${x.id}</td><td>${x.name}</td><td>${x.mobile}</td><td>${x.circle||'-'}</td><td>${x.service}</td><td>${x.fastIssue||'-'}</td><td><span class="pill">${x.status}</span></td><td><span class="pill due">${money(Math.max(0,(+x.total||0)-(+x.advance||0)))}</span></td><td><button class="mini" onclick="viewCustomer('${x.id}')">👁️</button> <button class="mini" onclick="downloadCustomerPDF('${x.id}')">📄 PDF</button> <button class="mini" onclick="editCustomer('${x.id}')">✏️</button> <button class="mini danger" onclick="deleteCustomer('${x.id}')">🗑️</button></td></tr>`).join(''):'<tr><td colspan="9" class="empty">No customers found</td></tr>';
+}
+function renderApps(){document.getElementById('applicationRows').innerHTML=customers.length?customers.map(x=>`<tr><td>${x.name}</td><td>${x.service}</td><td><span class="pill">${x.status}</span></td><td>${x.date}</td></tr>`).join(''):'<tr><td colspan="4" class="empty">No applications yet</td></tr>'}
+function renderPayments(){document.getElementById('paymentRows').innerHTML=customers.length?customers.map(x=>`<tr><td>${x.name}</td><td>${money(x.total)}</td><td>${money(x.advance)}</td><td>${money(Math.max(0,(+x.total||0)-(+x.advance||0)))}</td></tr>`).join(''):'<tr><td colspan="4" class="empty">No payment records yet</td></tr>'}
+function renderRecent(){let a=customers.slice(-5).reverse();document.getElementById('recent').innerHTML=a.length?'<div class="tablewrap"><table><thead><tr><th>ID</th><th>Name</th><th>Service</th><th>Status</th></tr></thead><tbody>'+a.map(x=>`<tr><td>${x.id}</td><td>${x.name}</td><td>${x.service}</td><td><span class="pill">${x.status}</span></td></tr>`).join('')+'</tbody></table></div>':'<div class="empty">No customers yet. Click “Add Customer” to begin.</div>'}
+function showPage(id,btn){document.querySelectorAll('main section').forEach(s=>s.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function closeModal(){document.getElementById('modal').classList.remove('show')}
+let editingId=null;
+function toggleLicenseFields(){
+  const s=document.getElementById('service').value;
+  const show=['License Renewal','Category Upgrade','Correction','Duplicate License','Smart Card'].includes(s);
+  document.getElementById('licenseFields').classList.toggle('hidden',!show);
+  document.getElementById('licenseRef').required=show;
+  document.getElementById('licenseNumber').required=show;
+}
+function fillForm(x){
+ document.getElementById('name').value=x.name||'';
+ document.getElementById('mobile').value=x.mobile||'';
+ document.getElementById('nid').value=x.nid||'';
+ document.getElementById('service').value=x.service||'Learner License';
+ document.getElementById('licenseRef').value=x.licenseRef||'';
+ document.getElementById('licenseNumber').value=x.licenseNumber||'';
+ document.getElementById('status').value=x.status||'New';
+ document.getElementById('total').value=x.total||0;
+ document.getElementById('advance').value=x.advance||0;
+ document.getElementById('notes').value=x.notes||'';
+ document.getElementById('learnerIssueDate').value=x.learnerIssueDate||((x.service==='Learner License')?x.issueDate||'':'');
+ document.getElementById('licenseIssueDate').value=x.licenseIssueDate||((x.service!=='Learner License')?x.issueDate||'':'');
+ document.getElementById('expiryDate').value=x.expiryDate||'';
+ document.getElementById('examDate').value=x.examDate||'';
+ toggleLicenseFields();
+}
+function resetForm(){
+ ['name','mobile','nid','licenseRef','licenseNumber','notes','learnerIssueDate','licenseIssueDate','expiryDate','examDate'].forEach(id=>document.getElementById(id).value='');
+ document.getElementById('service').value='Learner License';
+ document.getElementById('status').value='New';
+ document.getElementById('total').value=0;
+ document.getElementById('advance').value=0;
+ toggleLicenseFields();
+}
+function openModal(){
+ editingId=null; resetForm();
+ document.getElementById('modalTitle').textContent='Add Customer';
+ document.getElementById('saveBtn').textContent='Save Customer';
+ document.getElementById('modal').classList.add('show');
+}
+function editCustomer(id){
+ let x=customers.find(c=>c.id===id); if(!x)return;
+ editingId=id; fillForm(x);
+ document.getElementById('modalTitle').textContent='Edit Customer — '+id;
+ document.getElementById('saveBtn').textContent='Save Changes';
+ document.getElementById('modal').classList.add('show');
+}
+function saveCustomer(){
+ let name=document.getElementById('name').value.trim();
+ if(!name){alert('Customer name is required');return}
+ const service=document.getElementById('service').value;
+ const needsLicense=['License Renewal','Category Upgrade','Correction','Duplicate License','Smart Card'].includes(service);
+ const licenseRef=document.getElementById('licenseRef').value.trim();
+ const licenseNumber=document.getElementById('licenseNumber').value.trim();
+ if(needsLicense && !licenseRef){alert('Driving License Reference Number is required for '+service);document.getElementById('licenseRef').focus();return}
+ if(needsLicense && !licenseNumber){alert('Driving License Number is required for '+service);document.getElementById('licenseNumber').focus();return}
+ let total=+document.getElementById('total').value||0, advance=+document.getElementById('advance').value||0;
+ let data={name,mobile:document.getElementById('mobile').value,nid:document.getElementById('nid').value,circle:document.getElementById('circle').value,fastIssue:document.getElementById('fastIssue').value,service,licenseRef,licenseNumber,status:document.getElementById('status').value,total,advance,notes:document.getElementById('notes').value,learnerIssueDate:document.getElementById('learnerIssueDate').value,licenseIssueDate:document.getElementById('licenseIssueDate').value,expiryDate:document.getElementById('expiryDate').value,examDate:document.getElementById('examDate').value};
+ if(editingId){
+   let i=customers.findIndex(c=>c.id===editingId);
+   if(i>=0) customers[i]={...customers[i],...data};
+ }else{
+   customers.push({id:'C'+String(customers.length+1).padStart(5,'0'),...data,date:new Date().toLocaleDateString('en-GB')});
+ }
+ save(); closeModal(); editingId=null; resetForm();
+}
+function viewCustomer(id){
+ let x=customers.find(c=>c.id===id); if(!x)return;
+ alert(`Customer ID: ${x.id}\nName: ${x.name}\nMobile: ${x.mobile}\nNID: ${x.nid}\nCircle Name: ${x.circle||'-'}\nFast Issue Date: ${x.fastIssue||'-'}\nService: ${x.service}\nDriving License Reference Number: ${x.licenseRef||'-'}\nDriving License Number: ${x.licenseNumber||'-'}\nStatus: ${x.status}\nTotal Fee: ${money(x.total)}\nAdvance: ${money(x.advance)}\nDue: ${money(Math.max(0,(+x.total||0)-(+x.advance||0)))}\nDate: ${x.date}\nLearner Issue Date: ${x.learnerIssueDate||((x.service==='Learner License')?x.issueDate:'-')}\nLicense Issue Date: ${x.licenseIssueDate||((x.service!=='Learner License')?x.issueDate:'-')}\nExpiry Date: ${x.expiryDate||'-'}\nLearner Exam Date: ${x.examDate||'-'}\nNotes: ${x.notes||'-'}`);
+}
+function downloadCustomerPDF(id){
+ let x=customers.find(c=>String(c.id)===String(id));
+ if(!x)return;
+ // IMPORTANT: PDF values are read ONLY from the selected customer's own record.
+ const due=(Number(x.total)||0)-(Number(x.advance)||0);
+ const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+ const showDate=v=>v?esc(v):'Not Provided';
+ const w=window.open('','_blank','width=850,height=700');
+ if(!w){alert('Please allow pop-ups to generate the customer PDF.');return}
+ const expiryServices=['License Renewal','Category Upgrade','Correction','Duplicate License','Smart Card'];
+ const showExpiry=expiryServices.includes(String(x.service||''));
+ const expiryRow=showExpiry && x.expiryDate?`<div class="row"><div class="label">License Expiry Date</div><div>${showDate(x.expiryDate)}</div></div>`:'';
+ const examRow=x.examDate?`<div class="row"><div class="label">Learner Exam Date</div><div>${showDate(x.examDate)}</div></div>`:'';
+ w.document.open();
+ w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${esc(x.id)} - Customer History</title><style>body{font-family:Arial,sans-serif;padding:35px;color:#17212b}h1{margin:0;color:#102a43}h2{margin-top:30px;font-size:18px}.sub{color:#667788;margin:6px 0 25px}.row{display:grid;grid-template-columns:220px 1fr;border-bottom:1px solid #e5e7eb;padding:10px 0}.label{font-weight:700;color:#52616f}.footer{margin-top:35px;color:#667788;font-size:12px}@media print{.no-print{display:none}}</style></head><body><h1>BRTA SUPPORT 24/7</h1><div class="sub">Customer History / Service Record</div><h2>Customer Information</h2>
+<div class="row"><div class="label">Customer ID</div><div>${esc(x.id)}</div></div>
+<div class="row"><div class="label">Customer Name</div><div>${esc(x.name)}</div></div>
+<div class="row"><div class="label">Mobile Number</div><div>${esc(x.mobile)}</div></div>
+<div class="row"><div class="label">NID Number</div><div>${esc(x.nid)}</div></div><div class="row"><div class="label">Circle Name</div><div>${esc(x.circle||"Not Provided")}</div></div><div class="row"><div class="label">Fast Issue Date</div><div>${showDate(x.fastIssue)}</div></div>
+<div class="row"><div class="label">Service</div><div>${esc(x.service)}</div></div>
+<div class="row"><div class="label">Driving License Reference Number</div><div>${showDate(x.licenseRef)}</div></div>
+<div class="row"><div class="label">Driving License Number</div><div>${showDate(x.licenseNumber)}</div></div>
+<div class="row"><div class="label">Learner Issue Date</div><div>${showDate(x.learnerIssueDate||((x.service==='Learner License')?x.issueDate:''))}</div></div>
+<div class="row"><div class="label">License Issue Date</div><div>${showDate(x.licenseIssueDate||((x.service!=='Learner License')?x.issueDate:''))}</div></div>
+${expiryRow}${examRow}
+<div class="row"><div class="label">Status</div><div>${esc(x.status||'Not Provided')}</div></div>
+<div class="row"><div class="label">Total Fee</div><div>${esc(money(x.total))}</div></div>
+<div class="row"><div class="label">Advance Paid</div><div>${esc(money(x.advance))}</div></div>
+<div class="row"><div class="label">Due</div><div>${esc(money(due))}</div></div>
+<div class="row"><div class="label">Added Date</div><div>${esc(x.date||'Not Provided')}</div></div>
+<div class="row"><div class="label">Notes</div><div>${esc(x.notes||'Not Provided')}</div></div>
+<div class="footer">Generated from BRTA SUPPORT 24/7 Customer Management</div><button class="no-print" onclick="window.print()" style="margin-top:25px;padding:10px 16px">Print / Save as PDF</button><script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('./sw.js').catch(function(){});
+  });
+}
+</script>
+</body></html>`);
+ w.document.close();
+ w.focus();
+}
+function deleteCustomer(id){
+ let x=customers.find(c=>c.id===id); if(!x)return;
+ if(confirm(`Delete customer ${x.id} — ${x.name}?\nThis action cannot be undone.`)){
+   customers=customers.filter(c=>c.id!==id); save();
+ }
+}
+function daysUntil(dateStr){
+ if(!dateStr)return null;
+ let today=new Date(); today.setHours(0,0,0,0);
+ let d=new Date(dateStr+'T00:00:00'); d.setHours(0,0,0,0);
+ return Math.ceil((d-today)/86400000);
+}
+function renderReminders(){
+ let expiryDays=+(localStorage.getItem('brta247_expiry_days_v2')||59);
+ let examDays=+(localStorage.getItem('brta247_exam_days_v2')||3);
+ let items=[];
+ customers.forEach(x=>{
+   if(x.expiryDate){
+     let d=daysUntil(x.expiryDate);
+     if(d!==null && d<=expiryDays && d>=0) items.push({type:'🔴 Licence Expiry',name:x.name,date:x.expiryDate,days:d,cls:d<=7?'red':''});
+     else if(d!==null && d<0) items.push({type:'⚠️ Licence Expired',name:x.name,date:x.expiryDate,days:d,cls:'red'});
+   }
+   if(x.examDate){
+     let d=daysUntil(x.examDate);
+     if(d!==null && d<=examDays && d>=0) items.push({type:'🟠 Learner Exam',name:x.name,date:x.examDate,days:d,cls:''});
+     else if(d!==null && d<0) items.push({type:'⚠️ Exam Date Passed',name:x.name,date:x.examDate,days:d,cls:'red'});
+   }
+ });
+ items.sort((a,b)=>a.days-b.days);
+ document.getElementById('reminders').innerHTML=items.length?items.map(r=>`<div class="rem ${r.cls}"><b>${r.type} — ${r.name}</b>${r.days===0?'Today':r.days>0?`${r.days} day(s) remaining`:'Expired / date passed'} • ${r.date}</div>`).join(''):'<div class="empty">No reminders right now.</div>';
+ document.getElementById('expiryReminderDays').value=expiryDays;
+ document.getElementById('examReminderDays').value=examDays;
+}
+function saveReminderSettings(){
+ let e=Math.max(0,+document.getElementById('expiryReminderDays').value||59);
+ let x=Math.max(0,+document.getElementById('examReminderDays').value||3);
+ localStorage.setItem('brta247_expiry_days_v2',e);
+ localStorage.setItem('brta247_exam_days_v2',x);
+ renderReminders();
+ alert('Reminder settings saved.');
+}
+
+
+function backupToFile(){
+  const payload={
+    app:'BRTA SUPPORT 24/7',
+    version:'Offline Google Backup',
+    createdAt:new Date().toISOString(),
+    customers:customers,
+    expiryReminderDays:Number(safeGet('brta247_expiry_days_v2','59')||59),
+    examReminderDays:Number(safeGet('brta247_exam_days_v2','3')||3)
+  };
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  const stamp=new Date().toISOString().slice(0,19).replace(/[:T]/g,'-');
+  a.href=URL.createObjectURL(blob);
+  a.download='BRTA_SUPPORT_24_7_Backup_'+stamp+'.json';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  alert('Backup file created. Now upload this file to your Google Drive for safekeeping.');
+}
+function restoreFromFile(event){
+  const file=event.target.files && event.target.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(){
+    try{
+      const payload=JSON.parse(reader.result);
+      if(!payload || !Array.isArray(payload.customers)) throw new Error('Invalid backup');
+      if(!confirm('Restore '+payload.customers.length+' customer record(s)? Current records will be replaced.')) return;
+      customers=payload.customers;
+      safeSet('brta247_customers_v2',JSON.stringify(customers));
+      if(Number.isFinite(Number(payload.expiryReminderDays))) safeSet('brta247_expiry_days_v2',String(payload.expiryReminderDays));
+      if(Number.isFinite(Number(payload.examReminderDays))) safeSet('brta247_exam_days_v2',String(payload.examReminderDays));
+      renderAll();
+      alert('Backup restored successfully.');
+    }catch(e){
+      alert('This is not a valid BRTA SUPPORT 24/7 backup file.');
+    }finally{
+      event.target.value='';
+    }
+  };
+  reader.readAsText(file);
+}
+
+const DEFAULT_LOGIN_PASSWORD='1234';
+function loginPassword(){return safeGet('brta247_login_password_v2',DEFAULT_LOGIN_PASSWORD)||DEFAULT_LOGIN_PASSWORD}
+function doLogin(){
+ const p=document.getElementById('loginPass').value;
+ if(p===loginPassword()){
+   sessionStorage.setItem('brta247_logged_in','1');
+   document.getElementById('loginScreen').style.display='none';
+   document.getElementById('loginPass').value='';
+ } else document.getElementById('loginErr').style.display='block';
+}
+function doLogout(){try { sessionStorage.removeItem('brta247_logged_in'); } catch(e) {} document.getElementById('loginScreen').style.display='flex';}
+function saveSecurityEmail(){
+  const e=document.getElementById('securityEmail').value.trim();
+  if(e && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)){alert('Please enter a valid Gmail address.');return}
+  safeSet('brta247_security_email',e);
+  alert(e?'Security/recovery Gmail saved.':'Security/recovery Gmail cleared.');
+}
+function loadSecurityEmail(){
+  const el=document.getElementById('securityEmail'); if(el) el.value=safeGet('brta247_security_email','');
+}
+
+function changeLoginPassword(){
+ const old=document.getElementById('oldPass').value,n=document.getElementById('newPass').value,c=document.getElementById('confirmPass').value;
+ if(old!==loginPassword()){alert('Current password is incorrect.');return}
+ if(n.length<4){alert('Password must be at least 4 characters.');return}
+ if(n!==c){alert('New passwords do not match.');return}
+ safeSet('brta247_login_password_v2',n);
+ alert('Password changed successfully.');
+ document.getElementById('oldPass').value='';document.getElementById('newPass').value='';document.getElementById('confirmPass').value='';
+}
+function initLogin(){
+  try { if(sessionStorage.getItem('brta247_logged_in')==='1') document.getElementById('loginScreen').style.display='none'; }
+  catch(e) {}
+}
+
+initLogin();
+loadSecurityEmail();
+renderAll();
+</script>
+</body>
+</html>
