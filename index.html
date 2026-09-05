@@ -11,13 +11,6 @@
 @media(max-width:500px){.cards{grid-template-columns:1fr 1fr}.card{padding:13px}.card .n{font-size:22px}}
 .loginScreen{position:fixed;inset:0;background:#f3f6f9;display:flex;align-items:center;justify-content:center;z-index:9999}.loginBox{width:min(390px,92%);background:#fff;padding:30px;border-radius:15px;box-shadow:0 8px 30px #102a4320;text-align:center}.loginBox h2{margin:0;color:#102a43}.loginBox p{color:#718096;font-size:13px}.loginBox input{width:100%;padding:12px;border:1px solid #d8e0e8;border-radius:8px;margin:10px 0}.loginBox .btn{width:100%}.loginErr{display:none;color:#b91c1c;font-size:12px;margin-top:10px}.appLocked{display:none}.pwPanel{max-width:560px}
 </style>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#102a43">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="BRTA Manager">
-<link rel="apple-touch-icon" href="icon-192.png">
 </head>
 <body>
 <div id="loginScreen" class="loginScreen">
@@ -54,12 +47,18 @@
     </div>
     <div class="panel"><h2>💾 Offline Storage</h2><div class="sub">Customer records are saved in this browser on this computer. Keep this HTML file in a safe place and make backups.</div></div>
     <div class="panel"><h2>🔔 Reminders</h2><div class="sub" style="margin-bottom:12px">License expiry reminder: 59 days before expiry • Learner exam reminder: 3 days before exam</div><div id="reminders"></div></div>
+    <div class="panel"><h2>📍 Circle-wise Customers</h2><div id="circleSummary"></div></div>
     <div class="panel"><h2>Recent Customers</h2><div id="recent"></div></div>
   </section>
 
   <section id="customers" class="hidden">
     <div class="top"><div><h1>Customers</h1><div class="sub">Manage customer information</div></div><button class="btn" onclick="openModal()">+ Add Customer</button></div>
-    <div class="panel"><div class="toolbar"><input id="search" class="search" placeholder="Search name, mobile, NID or Customer ID..." oninput="renderCustomers()"></div><div class="tablewrap"><table><thead><tr><th>ID</th><th>Name</th><th>Mobile</th><th>Circle</th><th>Service</th><th>Fast Issue Date</th><th>Status</th><th>Due</th><th>Actions</th></tr></thead><tbody id="customerRows"></tbody></table></div></div>
+    <div class="panel"><div class="toolbar">
+<input id="search" class="search" placeholder="Search name, mobile, NID or Customer ID..." oninput="renderCustomers()">
+<select id="filterDivision" class="search" style="flex:0 1 190px;min-width:160px" onchange="updateFilterCircleOptions();renderCustomers()"><option value="">All Divisions</option></select>
+<select id="filterCircle" class="search" style="flex:0 1 180px;min-width:160px" onchange="renderCustomers()"><option value="">All Circles</option></select>
+<select id="filterStatus" class="search" style="flex:0 1 160px;min-width:140px" onchange="renderCustomers()"><option value="">All Status</option><option>New</option><option>Processing</option><option>Submitted</option><option>Appointment/Test</option><option>Approved</option><option>Ready</option><option>Delivered</option><option>Cancelled</option></select>
+</div><div class="tablewrap"><table><thead><tr><th>ID</th><th>Name</th><th>Mobile</th><th>Division</th><th>Circle</th><th>Service</th><th>Fast Issue</th><th>Status</th><th>Due</th><th>Actions</th></tr></thead><tbody id="customerRows"></tbody></table></div></div>
   </section>
 
   <section id="applications" class="hidden"><div class="top"><div><h1>Applications</h1><div class="sub">Track BRTA service progress</div></div></div><div class="panel"><div class="tablewrap"><table><thead><tr><th>Customer</th><th>Service</th><th>Status</th><th>Application Date</th></tr></thead><tbody id="applicationRows"></tbody></table></div></div></section>
@@ -89,7 +88,11 @@
 <label>Customer Name<input id="name" required></label>
 <label>Mobile Number<input id="mobile"></label>
 <label>NID Number<input id="nid"></label>
-<label>Circle Name<select id="circle"><option>Dhaka</option><option>Faridpur</option><option>Gazipur</option><option>Gopalganj</option><option>Kishoreganj</option><option>Madaripur</option><option>Manikganj</option><option>Munshiganj</option><option>Narayanganj</option><option>Narsingdi</option><option>Rajbari</option><option>Shariatpur</option><option>Tangail</option><option>Bogra</option><option>Joypurhat</option><option>Naogaon</option><option>Natore</option><option>Chapainawabganj</option><option>Pabna</option><option>Rajshahi</option><option>Sirajganj</option><option>Dinajpur</option><option>Gaibandha</option><option>Kurigram</option><option>Lalmonirhat</option><option>Nilphamari</option><option>Panchagarh</option><option>Rangpur</option><option>Thakurgaon</option><option>Barguna</option><option>Barishal</option><option>Bhola</option><option>Jhalokati</option><option>Patuakhali</option><option>Pirojpur</option><option>Bandarban</option><option>Brahmanbaria</option><option>Chandpur</option><option>Chattogram</option><option>Cox's Bazar</option><option>Cumilla</option><option>Feni</option><option>Khagrachhari</option><option>Lakshmipur</option><option>Noakhali</option><option>Rangamati</option><option>Habiganj</option><option>Moulvibazar</option><option>Sunamganj</option><option>Sylhet</option><option>Bagerhat</option><option>Chuadanga</option><option>Jashore</option><option>Jhenaidah</option><option>Khulna</option><option>Kushtia</option><option>Magura</option><option>Meherpur</option><option>Narail</option><option>Satkhira</option><option>Mymensingh</option><option>Netrokona</option><option>Jamalpur</option><option>Sherpur</option><option>Other / Custom</option></select></label>
+<label>Division<select id="division" onchange="updateCircleOptions()">
+<option>Dhaka</option>
+<option>Chattagram</option>
+</select></label>
+<label>Circle Name<select id="circle"></select></label>
 <label>Fast Issue Date<input id="fastIssue" type="date"></label>
 <label>Service<select id="service" onchange="toggleLicenseFields()"><option>Learner License</option><option>Driving License</option><option>License Renewal</option><option>Category Upgrade</option><option>Correction</option><option>Duplicate License</option><option>Smart Card</option><option>Driving Test</option><option>Vehicle Registration</option><option>Ownership Transfer</option><option>Other</option></select></label>
 <div id="licenseFields" class="full grid hidden">
@@ -120,20 +123,7 @@ let customers=[];
 try { customers=JSON.parse(safeGet('brta247_customers_v2','[]')||'[]'); } catch(e) { customers=[]; }
 customers=customers.map(x=>{ if(x.issueDate){ if(x.service==='Learner License' && !x.learnerIssueDate) x.learnerIssueDate=x.issueDate; else if(x.service!=='Learner License' && !x.licenseIssueDate) x.licenseIssueDate=x.issueDate; } return x; });
 function money(n){return '৳'+Number(n||0).toLocaleString('en-BD')}
-
-function autoBackup(){
-  try{
-    const payload={app:"BRTA SUPPORT 24/7",version:"2.0",createdAt:new Date().toISOString(),customers};
-    localStorage.setItem("brta_auto_backup_latest",JSON.stringify(payload));
-    const stamp=new Date().toISOString().replace(/[:.]/g,"-");
-    localStorage.setItem("brta_auto_backup_"+stamp,JSON.stringify(payload));
-    const keys=Object.keys(localStorage).filter(k=>k.startsWith("brta_auto_backup_")).sort();
-    while(keys.length>10){localStorage.removeItem(keys.shift())}
-  }catch(e){}
-}
-
 function save(){
-  autoBackup();
   memoryCustomers=customers.slice();
   safeSet('brta247_customers_v2',JSON.stringify(customers));
   renderAll();
@@ -147,15 +137,22 @@ function renderAll(){
  document.getElementById('paid').textContent=money(customers.reduce((a,x)=>a+(+x.advance||0),0));
  document.getElementById('due2').textContent=money(customers.reduce((a,x)=>a+(+x.total||0)-(+x.advance||0),0));
  document.getElementById('apps').textContent=customers.length;
- renderCustomers(); renderApps(); renderPayments(); renderRecent(); renderReminders();
+ updateFilterCircleOptions(); renderCustomers(); renderApps(); renderPayments(); renderRecent(); renderReminders(); renderCircleSummary();
 }
 function renderCustomers(){
  let q=(document.getElementById('search')?.value||'').toLowerCase();
- let a=customers.filter(x=>(x.id+x.name+x.mobile+x.nid+(x.circle||'')+(x.fastIssue||'')).toLowerCase().includes(q));
- document.getElementById('customerRows').innerHTML=a.length?a.map(x=>`<tr><td>${x.id}</td><td>${x.name}</td><td>${x.mobile}</td><td>${x.circle||'-'}</td><td>${x.service}</td><td>${x.fastIssue||'-'}</td><td><span class="pill">${x.status}</span></td><td><span class="pill due">${money(Math.max(0,(+x.total||0)-(+x.advance||0)))}</span></td><td><button class="mini" onclick="viewCustomer('${x.id}')">👁️</button> <button class="mini" onclick="downloadCustomerPDF('${x.id}')">📄 PDF</button> <button class="mini" onclick="editCustomer('${x.id}')">✏️</button> <button class="mini danger" onclick="deleteCustomer('${x.id}')">🗑️</button></td></tr>`).join(''):'<tr><td colspan="9" class="empty">No customers found</td></tr>';
+ let fd=document.getElementById('filterDivision')?.value||'';
+ let fc=document.getElementById('filterCircle')?.value||'';
+ let fs=document.getElementById('filterStatus')?.value||'';
+ let a=customers.filter(x=>{
+   const d=x.division||'Dhaka';
+   return (x.id+x.name+x.mobile+x.nid+d+(x.circle||'')+(x.fastIssue||'')).toLowerCase().includes(q)
+   && (!fd||d===fd) && (!fc||(x.circle||'')===fc) && (!fs||(x.status||'')===fs);
+ });
+ document.getElementById('customerRows').innerHTML=a.length?a.map(x=>`<tr><td>${x.id}</td><td>${x.name}</td><td>${x.mobile}</td><td>${x.division||'Dhaka'}</td><td>${x.circle||'-'}</td><td>${x.service}</td><td>${x.fastIssue||'-'}</td><td><span class="pill">${x.status}</span></td><td><span class="pill due">${money((+x.total||0)-(+x.advance||0))}</span></td><td><button class="mini" onclick="viewCustomer('${x.id}')">👁️</button> <button class="mini" onclick="downloadCustomerPDF('${x.id}')">📄 PDF</button> <button class="mini" onclick="editCustomer('${x.id}')">✏️</button> <button class="mini danger" onclick="deleteCustomer('${x.id}')">🗑️</button></td></tr>`).join(''):'<tr><td colspan="10" class="empty">No customers found</td></tr>';
 }
 function renderApps(){document.getElementById('applicationRows').innerHTML=customers.length?customers.map(x=>`<tr><td>${x.name}</td><td>${x.service}</td><td><span class="pill">${x.status}</span></td><td>${x.date}</td></tr>`).join(''):'<tr><td colspan="4" class="empty">No applications yet</td></tr>'}
-function renderPayments(){document.getElementById('paymentRows').innerHTML=customers.length?customers.map(x=>`<tr><td>${x.name}</td><td>${money(x.total)}</td><td>${money(x.advance)}</td><td>${money(Math.max(0,(+x.total||0)-(+x.advance||0)))}</td></tr>`).join(''):'<tr><td colspan="4" class="empty">No payment records yet</td></tr>'}
+function renderPayments(){document.getElementById('paymentRows').innerHTML=customers.length?customers.map(x=>`<tr><td>${x.name}</td><td>${money(x.total)}</td><td>${money(x.advance)}</td><td>${money((+x.total||0)-(+x.advance||0))}</td></tr>`).join(''):'<tr><td colspan="4" class="empty">No payment records yet</td></tr>'}
 function renderRecent(){let a=customers.slice(-5).reverse();document.getElementById('recent').innerHTML=a.length?'<div class="tablewrap"><table><thead><tr><th>ID</th><th>Name</th><th>Service</th><th>Status</th></tr></thead><tbody>'+a.map(x=>`<tr><td>${x.id}</td><td>${x.name}</td><td>${x.service}</td><td><span class="pill">${x.status}</span></td></tr>`).join('')+'</tbody></table></div>':'<div class="empty">No customers yet. Click “Add Customer” to begin.</div>'}
 function showPage(id,btn){document.querySelectorAll('main section').forEach(s=>s.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
 function closeModal(){document.getElementById('modal').classList.remove('show')}
@@ -167,13 +164,61 @@ function toggleLicenseFields(){
   document.getElementById('licenseRef').required=show;
   document.getElementById('licenseNumber').required=show;
 }
+const DISTRICT_LIST=[
+  'Bagerhat','Bandarban','Barguna','Barishal','Bhola','Bogura','Brahmanbaria','Chandpur',
+  'Chattogram','Chuadanga','Cox’s Bazar','Cumilla','Dhaka','Dinajpur','Faridpur','Feni',
+  'Gaibandha','Gazipur','Gopalganj','Habiganj','Jamalpur','Jashore','Jhalokathi','Jhenaidah',
+  'Joypurhat','Khagrachhari','Khulna','Kishoreganj','Kurigram','Kushtia','Lakshmipur',
+  'Lalmonirhat','Madaripur','Magura','Manikganj','Meherpur','Moulvibazar','Munshiganj',
+  'Mymensingh','Naogaon','Narail','Narayanganj','Narsingdi','Natore','Netrokona','Nilphamari',
+  'Noakhali','Pabna','Panchagarh','Patuakhali','Pirojpur','Rajbari','Rajshahi','Rangamati',
+  'Rangpur','Satkhira','Shariatpur','Sherpur','Sirajganj','Sunamganj','Sylhet','Tangail','Thakurgaon'
+];
+const CIRCLE_MAP={
+  Dhaka:['Metro-1','Metro-2','Metro-3','Metro-4','Dhaka District','Savar BRTA'],
+  Chattagram:['Metro-1','Metro-2','Chattagram District']
+};
+function populateDivisionList(){
+  const d=document.getElementById('division');
+  if(!d)return;
+  const current=d.value;
+  d.innerHTML='<option value="Dhaka">Dhaka</option><option value="Chattagram">Chattagram</option>'+
+    DISTRICT_LIST.filter(x=>x!=='Dhaka'&&x!=='Chattogram').map(x=>`<option value="${x}">${x}</option>`).join('');
+  if(current && [...d.options].some(o=>o.value===current)) d.value=current;
+}
+function updateCircleOptions(selected=''){
+  const division=document.getElementById('division');
+  const circle=document.getElementById('circle');
+  if(!division||!circle)return;
+  const list=CIRCLE_MAP[division.value] || [division.value];
+  circle.innerHTML=list.map(v=>`<option>${v}</option>`).join('');
+  if(selected && list.includes(selected)) circle.value=selected;
+}
+function updateFilterCircleOptions(){
+  const d=document.getElementById('filterDivision')?.value||'';
+  const el=document.getElementById('filterCircle');
+  if(!el)return;
+  const list=d?(CIRCLE_MAP[d]||[d]):[...Object.values(CIRCLE_MAP).flat(),...DISTRICT_LIST];
+  const current=el.value;
+  el.innerHTML='<option value="">All Circles</option>'+[...new Set(list)].map(v=>`<option>${v}</option>`).join('');
+  if([...el.options].some(o=>o.value===current))el.value=current;
+}
+function renderCircleSummary(){
+  const el=document.getElementById('circleSummary'); if(!el)return;
+  const rows=[];
+  Object.entries(CIRCLE_MAP).forEach(([division,list])=>list.forEach(circle=>{
+    const n=customers.filter(x=>(x.division||'Dhaka')===division && x.circle===circle).length;
+    rows.push(`<div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #edf0f3"><span><b>${division}</b> — ${circle}</span><b>${n}</b></div>`);
+  }));
+  el.innerHTML=rows.join('');
+}
 function fillForm(x){
  document.getElementById('name').value=x.name||'';
  document.getElementById('mobile').value=x.mobile||'';
  document.getElementById('nid').value=x.nid||'';
- document.getElementById('circle').value=x.circle||'Dhaka';
- document.getElementById('fastIssue').value=x.fastIssue||'';
- document.getElementById('service').value=x.service||'Learner License';
+ document.getElementById('division').value=x.division||'Dhaka';
+  updateCircleOptions(x.circle||'');
+  document.getElementById('service').value=x.service||'Learner License';
  document.getElementById('licenseRef').value=x.licenseRef||'';
  document.getElementById('licenseNumber').value=x.licenseNumber||'';
  document.getElementById('status').value=x.status||'New';
@@ -217,18 +262,19 @@ function saveCustomer(){
  if(needsLicense && !licenseRef){alert('Driving License Reference Number is required for '+service);document.getElementById('licenseRef').focus();return}
  if(needsLicense && !licenseNumber){alert('Driving License Number is required for '+service);document.getElementById('licenseNumber').focus();return}
  let total=+document.getElementById('total').value||0, advance=+document.getElementById('advance').value||0;
- let data={name,mobile:document.getElementById('mobile').value,nid:document.getElementById('nid').value,circle:document.getElementById('circle').value,fastIssue:document.getElementById('fastIssue').value,service,licenseRef,licenseNumber,status:document.getElementById('status').value,total,advance,notes:document.getElementById('notes').value,learnerIssueDate:document.getElementById('learnerIssueDate').value,licenseIssueDate:document.getElementById('licenseIssueDate').value,expiryDate:document.getElementById('expiryDate').value,examDate:document.getElementById('examDate').value};
+ let data={name,mobile:document.getElementById('mobile').value,nid:document.getElementById('nid').value,division:document.getElementById('division').value,circle:document.getElementById('circle').value,fastIssue:document.getElementById('fastIssue').value,service,licenseRef,licenseNumber,status:document.getElementById('status').value,total,advance,notes:document.getElementById('notes').value,learnerIssueDate:document.getElementById('learnerIssueDate').value,licenseIssueDate:document.getElementById('licenseIssueDate').value,expiryDate:document.getElementById('expiryDate').value,examDate:document.getElementById('examDate').value};
  if(editingId){
    let i=customers.findIndex(c=>c.id===editingId);
    if(i>=0) customers[i]={...customers[i],...data};
  }else{
-   customers.push({id:'C'+String(customers.length+1).padStart(5,'0'),...data,date:new Date().toLocaleDateString('en-GB')});
+   const nextNo=customers.reduce((m,x)=>Math.max(m,parseInt(String(x.id||'').replace(/^C/,''),10)||0),0)+1;
+    customers.push({id:'C'+String(nextNo).padStart(5,'0'),...data,date:new Date().toLocaleDateString('en-GB')});
  }
  save(); closeModal(); editingId=null; resetForm();
 }
 function viewCustomer(id){
  let x=customers.find(c=>c.id===id); if(!x)return;
- alert(`Customer ID: ${x.id}\nName: ${x.name}\nMobile: ${x.mobile}\nNID: ${x.nid}\nCircle Name: ${x.circle||'-'}\nFast Issue Date: ${x.fastIssue||'-'}\nService: ${x.service}\nDriving License Reference Number: ${x.licenseRef||'-'}\nDriving License Number: ${x.licenseNumber||'-'}\nStatus: ${x.status}\nTotal Fee: ${money(x.total)}\nAdvance: ${money(x.advance)}\nDue: ${money(Math.max(0,(+x.total||0)-(+x.advance||0)))}\nDate: ${x.date}\nLearner Issue Date: ${x.learnerIssueDate||((x.service==='Learner License')?x.issueDate:'-')}\nLicense Issue Date: ${x.licenseIssueDate||((x.service!=='Learner License')?x.issueDate:'-')}\nExpiry Date: ${x.expiryDate||'-'}\nLearner Exam Date: ${x.examDate||'-'}\nNotes: ${x.notes||'-'}`);
+ alert(`Customer ID: ${x.id}\nName: ${x.name}\nMobile: ${x.mobile}\nNID: ${x.nid}\nDivision: ${x.division||'Dhaka'}\nCircle Name: ${x.circle||'-'}\nFast Issue Date: ${x.fastIssue||'-'}\nService: ${x.service}\nDriving License Reference Number: ${x.licenseRef||'-'}\nDriving License Number: ${x.licenseNumber||'-'}\nStatus: ${x.status}\nTotal Fee: ${money(x.total)}\nAdvance: ${money(x.advance)}\nDue: ${money((+x.total||0)-(+x.advance||0))}\nDate: ${x.date}\nLearner Issue Date: ${x.learnerIssueDate||((x.service==='Learner License')?x.issueDate:'-')}\nLicense Issue Date: ${x.licenseIssueDate||((x.service!=='Learner License')?x.issueDate:'-')}\nExpiry Date: ${x.expiryDate||'-'}\nLearner Exam Date: ${x.examDate||'-'}\nNotes: ${x.notes||'-'}`);
 }
 function downloadCustomerPDF(id){
  let x=customers.find(c=>String(c.id)===String(id));
@@ -248,7 +294,7 @@ function downloadCustomerPDF(id){
 <div class="row"><div class="label">Customer ID</div><div>${esc(x.id)}</div></div>
 <div class="row"><div class="label">Customer Name</div><div>${esc(x.name)}</div></div>
 <div class="row"><div class="label">Mobile Number</div><div>${esc(x.mobile)}</div></div>
-<div class="row"><div class="label">NID Number</div><div>${esc(x.nid)}</div></div><div class="row"><div class="label">Circle Name</div><div>${esc(x.circle||"Not Provided")}</div></div><div class="row"><div class="label">Fast Issue Date</div><div>${showDate(x.fastIssue)}</div></div>
+<div class="row"><div class="label">NID Number</div><div>${esc(x.nid)}</div></div><div class="row"><div class="label">Division</div><div>${esc(x.division||"Dhaka")}</div></div><div class="row"><div class="label">Circle Name</div><div>${esc(x.circle||"Not Provided")}</div></div><div class="row"><div class="label">Fast Issue Date</div><div>${showDate(x.fastIssue)}</div></div>
 <div class="row"><div class="label">Service</div><div>${esc(x.service)}</div></div>
 <div class="row"><div class="label">Driving License Reference Number</div><div>${showDate(x.licenseRef)}</div></div>
 <div class="row"><div class="label">Driving License Number</div><div>${showDate(x.licenseNumber)}</div></div>
@@ -261,14 +307,7 @@ ${expiryRow}${examRow}
 <div class="row"><div class="label">Due</div><div>${esc(money(due))}</div></div>
 <div class="row"><div class="label">Added Date</div><div>${esc(x.date||'Not Provided')}</div></div>
 <div class="row"><div class="label">Notes</div><div>${esc(x.notes||'Not Provided')}</div></div>
-<div class="footer">Generated from BRTA SUPPORT 24/7 Customer Management</div><button class="no-print" onclick="window.print()" style="margin-top:25px;padding:10px 16px">Print / Save as PDF</button><script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function () {
-    navigator.serviceWorker.register('./sw.js').catch(function(){});
-  });
-}
-</script>
-</body></html>`);
+<div class="footer">Generated from BRTA SUPPORT 24/7 Customer Management</div><button class="no-print" onclick="window.print()" style="margin-top:25px;padding:10px 16px">Print / Save as PDF</button></body></html>`);
  w.document.close();
  w.focus();
 }
@@ -360,9 +399,8 @@ function restoreFromFile(event){
 }
 
 const DEFAULT_LOGIN_PASSWORD='1234';
-function loginPassword(){return safeGet('brta247_login_password_v3',DEFAULT_LOGIN_PASSWORD)||DEFAULT_LOGIN_PASSWORD}
+function loginPassword(){return safeGet('brta247_login_password_v2',DEFAULT_LOGIN_PASSWORD)||DEFAULT_LOGIN_PASSWORD}
 function doLogin(){
- document.getElementById('loginErr').style.display='none';
  const p=document.getElementById('loginPass').value;
  if(p===loginPassword()){
    sessionStorage.setItem('brta247_logged_in','1');
@@ -386,7 +424,7 @@ function changeLoginPassword(){
  if(old!==loginPassword()){alert('Current password is incorrect.');return}
  if(n.length<4){alert('Password must be at least 4 characters.');return}
  if(n!==c){alert('New passwords do not match.');return}
- safeSet('brta247_login_password_v3',n);
+ safeSet('brta247_login_password_v2',n);
  alert('Password changed successfully.');
  document.getElementById('oldPass').value='';document.getElementById('newPass').value='';document.getElementById('confirmPass').value='';
 }
@@ -397,6 +435,11 @@ function initLogin(){
 
 initLogin();
 loadSecurityEmail();
+populateDivisionList();
+const fd=document.getElementById('filterDivision');
+if(fd) fd.innerHTML='<option value="">All Divisions</option>'+DISTRICT_LIST.map(x=>`<option>${x}</option>`).join('');
+updateCircleOptions();
+updateFilterCircleOptions();
 renderAll();
 </script>
 </body>
